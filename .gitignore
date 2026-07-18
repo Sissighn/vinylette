@@ -5,3 +5,4 @@ Vinylette.app/
 *.xcodeproj
 .swiftpm/
 .vscode/
+dist/
