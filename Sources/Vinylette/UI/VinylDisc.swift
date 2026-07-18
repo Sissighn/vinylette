@@ -4,8 +4,12 @@ import SwiftUI
 /// a stationary light sheen, and a printed center label. Only the label
 /// rotates — the sheen stays put like a real light reflection.
 struct VinylDisc: View {
+    enum LabelStyle { case text, cover }
+
     let artist: String
     let track: String
+    var artwork: NSImage? = nil
+    var style: LabelStyle = .text
     var angle: Double = 0
 
     var body: some View {
@@ -78,7 +82,11 @@ struct VinylDisc: View {
     private var label: some View {
         ZStack {
             Circle().fill(Palette.cream)
-            if track.isEmpty {
+            if style == .cover, let artwork {
+                Image(nsImage: artwork)
+                    .resizable()
+                    .scaledToFill()
+            } else if track.isEmpty {
                 Text("♡")
                     .font(.system(size: 26, design: .serif))
                     .foregroundColor(Palette.blush)
