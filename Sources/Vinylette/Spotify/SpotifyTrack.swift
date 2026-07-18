@@ -25,4 +25,18 @@ struct SpotifyTrack: Equatable {
             isPlaying: parts[4] == "playing"
         )
     }
+
+    /// Builds a track from Spotify's `com.spotify.client.PlaybackStateChanged`
+    /// distributed-notification payload. The payload carries no artwork URL;
+    /// that is looked up separately via AppleScript.
+    static func from(userInfo: [AnyHashable: Any]) -> SpotifyTrack? {
+        guard let state = userInfo["Player State"] as? String else { return nil }
+        return SpotifyTrack(
+            name: userInfo["Name"] as? String ?? "",
+            artist: userInfo["Artist"] as? String ?? "",
+            album: userInfo["Album"] as? String ?? "",
+            artworkURL: "",
+            isPlaying: state == "Playing"
+        )
+    }
 }
