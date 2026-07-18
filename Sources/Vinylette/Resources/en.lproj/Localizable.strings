@@ -1,0 +1,16 @@
+"accessibility.design" = "Choose design";
+"accessibility.openAutomationSettings" = "Open Automation settings";
+"accessibility.pause" = "Pause music";
+"accessibility.play" = "Play music";
+"design.albumCover" = "Album Cover";
+"design.classicLabel" = "Classic Label";
+"design.sleeve" = "Cover & Record";
+"menu.design" = "Design";
+"menu.launchAtLogin" = "Launch at Login";
+"menu.noTrack" = "Nothing playing";
+"menu.quit" = "Quit Vinylette";
+"menu.toggleWidget" = "Show/Hide Vinylette";
+"permission.allow" = "Allow";
+"permission.missing" = "Spotify permission required";
+"service.error.message" = "The launch-at-login setting could not be changed.";
+"service.error.title" = "Setting Not Changed";
