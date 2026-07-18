@@ -55,6 +55,8 @@ struct VinylView: View {
 
             Tonearm(playing: spotify.isPlaying)
                 .offset(x: 96, y: -50)
+                .contentShape(Rectangle())
+                .onTapGesture { spotify.playPause() }
 
             if hovering {
                 controls
