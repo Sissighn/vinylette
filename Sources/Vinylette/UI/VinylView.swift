@@ -5,11 +5,15 @@ import SwiftUI
 /// peeking out of its album sleeve.
 struct VinylView: View {
     @EnvironmentObject var spotify: SpotifyController
+    @EnvironmentObject var panelVisibility: PanelVisibility
     @AppStorage("widgetDesign") private var designRaw = WidgetDesign.classicLabel.rawValue
     @State private var angle: Double = 0
     @State private var hovering = false
 
     private var design: WidgetDesign { WidgetDesign(rawValue: designRaw) ?? .classicLabel }
+
+    /// Spin only while music plays and someone can actually see the widget.
+    private var isSpinning: Bool { spotify.isPlaying && panelVisibility.isVisible }
 
     var body: some View {
         ZStack {
@@ -31,21 +35,27 @@ struct VinylView: View {
                     .padding(.bottom, 6)
                     .transition(.opacity)
             }
+
+            if spotify.permissionDenied {
+                permissionNotice
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .transition(.opacity)
+            }
         }
-        .frame(width: 276, height: 240)
-        .padding(12)
-        .task(id: spotify.isPlaying) {
-            guard spotify.isPlaying else { return }
+        .frame(width: WidgetLayout.contentSize.width, height: WidgetLayout.contentSize.height)
+        .padding(WidgetLayout.contentPadding)
+        .task(id: isSpinning) {
+            guard isSpinning else { return }
 
             var previousFrame = Date()
             while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 16_666_667)
+                try? await Task.sleep(nanoseconds: WidgetLayout.spinFrameNanoseconds)
                 let currentFrame = Date()
                 let elapsed = currentFrame.timeIntervalSince(previousFrame)
                 previousFrame = currentFrame
 
-                // A 33⅓ RPM LP turns at 200° per second.
-                angle = (angle + elapsed * 50).truncatingRemainder(dividingBy: 360)
+                angle = (angle + elapsed * WidgetLayout.spinDegreesPerSecond)
+                    .truncatingRemainder(dividingBy: 360)
             }
         }
         .onHover { hovering = $0 }
@@ -136,12 +146,36 @@ struct VinylView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(spotify.isPlaying ? "Musik pausieren" : "Musik abspielen")
+        .accessibilityLabel(
+            spotify.isPlaying ? L10n.text("accessibility.pause") : L10n.text("accessibility.play")
+        )
+    }
+
+    /// Shown when macOS blocks Apple Events to Spotify: a short hint with a
+    /// direct route to the Automation pane in System Settings.
+    private var permissionNotice: some View {
+        HStack(spacing: 10) {
+            Text(L10n.text("permission.missing"))
+                .font(.system(size: 11, weight: .semibold, design: .serif))
+                .foregroundColor(Palette.cocoa)
+            Button(L10n.text("permission.allow")) { spotify.openAutomationSettings() }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundColor(Palette.rose)
+                .accessibilityLabel(L10n.text("accessibility.openAutomationSettings"))
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 7)
+        .background(
+            Capsule().fill(Palette.cream.opacity(0.96))
+                .overlay(Capsule().strokeBorder(Palette.rose.opacity(0.55), lineWidth: 1))
+                .shadow(color: Palette.cocoa.opacity(0.25), radius: 5, y: 2)
+        )
     }
 
     private var settingsButton: some View {
         Menu {
-            Picker("Design", selection: $designRaw) {
+            Picker(L10n.text("menu.design"), selection: $designRaw) {
                 ForEach(WidgetDesign.allCases) { design in
                     Text(design.displayName).tag(design.rawValue)
                 }
@@ -161,6 +195,6 @@ struct VinylView: View {
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
         .fixedSize()
-        .accessibilityLabel("Design auswählen")
+        .accessibilityLabel(L10n.text("accessibility.design"))
     }
 }
