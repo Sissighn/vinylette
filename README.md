@@ -39,7 +39,13 @@ the widget. The choice is remembered across launches.
 - Three selectable designs, persisted across launches
 - Desktop-widget window behavior: always on the desktop, never above your apps,
   present on every Space
-- Menu bar item to show, hide, and quit the widget
+- Remembers its dragged position and moves back onscreen when the display setup
+  changes
+- Pauses its animation while fully covered by other windows, so it consumes
+  no energy it cannot show
+- Menu bar item with the current track, design picker, launch-at-login toggle,
+  show/hide, and quit actions
+- Localized interface and accessibility labels in English and German
 - No login and no API keys; playback state arrives instantly via Spotify's
   distributed notifications, commands go through AppleScript
 
@@ -75,16 +81,22 @@ Automation permission is missing, the widget shows a hint with a direct
 shortcut to the relevant System Settings pane. This design avoids OAuth, API
 keys, and any network dependency beyond fetching cover art.
 
+The spin animation runs in a frame loop that pauses automatically while the
+panel is fully covered by other windows, tracked through the window's
+occlusion state.
+
 ```
 Sources/Vinylette
-├── main.swift                  Entry point
 ├── App
+│   ├── VinyletteApp.swift      Entry point
 │   ├── AppDelegate.swift       Wires panel, menu bar, and Spotify controller
 │   ├── FloatingPanel.swift     Desktop-level, borderless, draggable panel
+│   ├── Localization.swift      String Catalog access for AppKit and SwiftUI
+│   ├── PanelVisibility.swift   Occlusion state observed by the UI
 │   └── StatusBarController.swift
 ├── Spotify
-│   ├── SpotifyController.swift Polling and playback commands
-│   ├── SpotifyTrack.swift      Playback-state model and response parsing
+│   ├── SpotifyController.swift Playback state and commands (event-driven)
+│   ├── SpotifyTrack.swift      Playback-state model and payload parsing
 │   └── AppleScriptRunner.swift
 └── UI
     ├── VinylView.swift         Main view and the three design layouts
@@ -92,6 +104,7 @@ Sources/Vinylette
     ├── Tonearm.swift
     ├── PlaybackControls.swift
     ├── WidgetDesign.swift
+    ├── WidgetLayout.swift      Shared dimensions and motion constants
     └── Palette.swift
 ```
 

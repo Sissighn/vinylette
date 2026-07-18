@@ -16,6 +16,13 @@
     <string>Vinylette</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>de</string>
+    </array>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>CFBundleIconFile</key>
@@ -23,6 +30,6 @@
     <key>LSUIElement</key>
     <true/>
     <key>NSAppleEventsUsageDescription</key>
-    <string>Vinylette steuert Spotify, um deine Musik anzuzeigen und abzuspielen.</string>
+    <string>Vinylette controls Spotify to display your music and manage playback.</string>
 </dict>
 </plist>
