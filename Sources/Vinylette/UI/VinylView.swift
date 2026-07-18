@@ -51,9 +51,8 @@ struct VinylView: View {
                 )
                 .shadow(color: Palette.cocoa.opacity(0.25), radius: 12, y: 6)
 
-            VinylDisc(artist: spotify.artistName, track: spotify.trackName)
+            VinylDisc(artist: spotify.artistName, track: spotify.trackName, angle: angle)
                 .frame(width: 190, height: 190)
-                .rotationEffect(.degrees(angle))
                 .offset(x: -18)
 
             Button(action: spotify.playPause) {
