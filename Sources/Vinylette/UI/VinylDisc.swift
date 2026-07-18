@@ -1,35 +1,67 @@
 import SwiftUI
 
-/// The record itself: black disc with grooves and a printed center label —
-/// artist above the spindle, track title below, in warm serif type.
+/// The record: near-black disc with fine grooves, track-separator bands,
+/// a stationary light sheen, and a printed center label. Only the label
+/// rotates — the sheen stays put like a real light reflection.
 struct VinylDisc: View {
     let artist: String
     let track: String
+    var angle: Double = 0
 
     var body: some View {
         ZStack {
-            // Record with subtle sheen
+            // Vinyl base with a soft edge bevel
+            Circle()
+                .fill(
+                    RadialGradient(
+                        gradient: Gradient(stops: [
+                            .init(color: Color(white: 0.10), location: 0.0),
+                            .init(color: Palette.vinyl, location: 0.55),
+                            .init(color: Color(white: 0.03), location: 0.96),
+                            .init(color: Color(white: 0.20), location: 1.0),
+                        ]),
+                        center: .center, startRadius: 0, endRadius: 95
+                    )
+                )
+                .shadow(color: .black.opacity(0.4), radius: 9, y: 5)
+
+            // Fine grooves from the edge down to the run-out area
+            ForEach(0..<16) { i in
+                Circle()
+                    .strokeBorder(Color.white.opacity(0.045), lineWidth: 0.6)
+                    .padding(5 + CGFloat(i) * 2.6)
+            }
+
+            // Track-separator bands (slightly shinier rings)
+            ForEach([9, 22, 34], id: \.self) { inset in
+                Circle()
+                    .strokeBorder(Color.white.opacity(0.09), lineWidth: 1.3)
+                    .padding(CGFloat(inset))
+            }
+
+            // Stationary sheen — two soft light bands sweeping the surface
             Circle()
                 .fill(
                     AngularGradient(
-                        colors: [Palette.vinyl, .black, Palette.vinyl,
-                                 Color(white: 0.22), Palette.vinyl],
-                        center: .center
+                        gradient: Gradient(stops: [
+                            .init(color: .clear, location: 0.00),
+                            .init(color: .white.opacity(0.10), location: 0.07),
+                            .init(color: .clear, location: 0.16),
+                            .init(color: .clear, location: 0.48),
+                            .init(color: .white.opacity(0.06), location: 0.56),
+                            .init(color: .clear, location: 0.66),
+                            .init(color: .clear, location: 1.00),
+                        ]),
+                        center: .center,
+                        angle: .degrees(-50)
                     )
                 )
-                .shadow(color: .black.opacity(0.35), radius: 8, y: 4)
-
-            // Grooves
-            ForEach(0..<7) { i in
-                Circle()
-                    .strokeBorder(Color.white.opacity(0.05), lineWidth: 1)
-                    .padding(CGFloat(8 + i * 9))
-            }
 
             label
                 .frame(width: 92, height: 92)
                 .clipShape(Circle())
                 .overlay(Circle().strokeBorder(Palette.gold.opacity(0.7), lineWidth: 1.5))
+                .rotationEffect(.degrees(angle))
 
             // Spindle
             Circle()
@@ -41,6 +73,8 @@ struct VinylDisc: View {
         }
     }
 
+    // Printed like a real record label — artist above the spindle,
+    // track title below, in warm serif type.
     private var label: some View {
         ZStack {
             Circle().fill(Palette.cream)
