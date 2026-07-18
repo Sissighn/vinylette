@@ -18,8 +18,6 @@ struct VinylView: View {
     @State private var angle: Double = 0
     @State private var hovering = false
 
-    private let spin = Timer.publish(every: 1.0 / 30.0, on: .main, in: .common).autoconnect()
-
     var body: some View {
         VStack(spacing: 10) {
             deck
@@ -28,8 +26,19 @@ struct VinylView: View {
             }
         }
         .padding(12)
-        .onReceive(spin) { _ in
-            if spotify.isPlaying { angle += 0.9 } // gentle ~27°/s spin
+        .task(id: spotify.isPlaying) {
+            guard spotify.isPlaying else { return }
+
+            var previousFrame = Date()
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 16_666_667)
+                let currentFrame = Date()
+                let elapsed = currentFrame.timeIntervalSince(previousFrame)
+                previousFrame = currentFrame
+
+                // A real LP turns at 33⅓ RPM (200° per second).
+                angle = (angle + elapsed * 200).truncatingRemainder(dividingBy: 360)
+            }
         }
         .onHover { hovering = $0 }
     }
@@ -50,15 +59,19 @@ struct VinylView: View {
                 )
                 .shadow(color: Palette.cocoa.opacity(0.25), radius: 12, y: 6)
 
-            VinylDisc(artwork: spotify.artwork)
+            VinylDisc(artist: spotify.artistName, track: spotify.trackName)
                 .frame(width: 190, height: 190)
                 .rotationEffect(.degrees(angle))
                 .offset(x: -18)
 
-            Tonearm(playing: spotify.isPlaying)
+            Button(action: spotify.playPause) {
+                Tonearm(playing: spotify.isPlaying)
+                    .frame(width: 64, height: 132)
+                    .contentShape(Rectangle())
+            }
+                .buttonStyle(.plain)
+                .accessibilityLabel(spotify.isPlaying ? "Musik pausieren" : "Musik abspielen")
                 .offset(x: 96, y: -50)
-                .contentShape(Rectangle())
-                .onTapGesture { spotify.playPause() }
 
             if hovering {
                 controls
@@ -118,7 +131,8 @@ struct VinylView: View {
 // MARK: - Vinyl disc
 
 struct VinylDisc: View {
-    let artwork: NSImage?
+    let artist: String
+    let track: String
 
     var body: some View {
         ZStack {
@@ -140,28 +154,42 @@ struct VinylDisc: View {
                     .padding(CGFloat(8 + i * 9))
             }
 
-            // Center label: album art, or a rose-colored label as fallback
-            Group {
-                if let artwork {
-                    Image(nsImage: artwork)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
+            // Center label: printed like a real record label — artist above
+            // the spindle, track title below, in warm serif type
+            ZStack {
+                Circle().fill(Palette.cream)
+                if track.isEmpty {
+                    Text("♡")
+                        .font(.system(size: 26, design: .serif))
+                        .foregroundColor(Palette.blush)
                 } else {
-                    ZStack {
-                        Palette.blush
-                        Text("♡")
-                            .font(.system(size: 26, design: .serif))
-                            .foregroundColor(Palette.cream)
+                    VStack(spacing: 0) {
+                        Text(artist)
+                            .font(.system(size: 10, weight: .semibold, design: .serif))
+                            .foregroundColor(Palette.vinyl)
+                        Spacer(minLength: 16)
+                        Text(track)
+                            .font(.system(size: 8.5, design: .serif))
+                            .italic()
+                            .foregroundColor(Palette.cocoa)
                     }
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.55)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 14)
                 }
             }
-            .frame(width: 76, height: 76)
+            .frame(width: 92, height: 92)
             .clipShape(Circle())
             .overlay(Circle().strokeBorder(Palette.gold.opacity(0.7), lineWidth: 1.5))
 
             // Spindle
             Circle()
-                .fill(Palette.cream)
+                .fill(
+                    RadialGradient(colors: [Color(white: 0.85), Color(white: 0.5)],
+                                   center: .topLeading, startRadius: 0, endRadius: 7)
+                )
                 .frame(width: 7, height: 7)
         }
     }
