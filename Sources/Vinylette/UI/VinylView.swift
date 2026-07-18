@@ -1,23 +1,14 @@
 import SwiftUI
 
-/// The main widget: player deck with spinning record and tonearm,
-/// plus the track-info capsule while Spotify is playing something.
+/// The main widget: player deck with spinning record and tonearm.
 struct VinylView: View {
     @EnvironmentObject var spotify: SpotifyController
     @State private var angle: Double = 0
     @State private var hovering = false
 
     var body: some View {
-        VStack(spacing: 10) {
-            deck
-            if spotify.isRunning && !spotify.trackName.isEmpty {
-                TrackInfoView(
-                    title: spotify.trackName,
-                    subtitle: spotify.artistName.isEmpty ? "♡" : spotify.artistName
-                )
-            }
-        }
-        .padding(12)
+        deck
+            .padding(12)
         .task(id: spotify.isPlaying) {
             guard spotify.isPlaying else { return }
 
