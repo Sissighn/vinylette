@@ -1,0 +1,102 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "accessibility.design" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Design auswählen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose design" } }
+      }
+    },
+    "accessibility.openAutomationSettings" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Systemeinstellungen für Automation öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Automation settings" } }
+      }
+    },
+    "accessibility.pause" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Musik pausieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pause music" } }
+      }
+    },
+    "accessibility.play" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Musik abspielen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Play music" } }
+      }
+    },
+    "design.albumCover" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Album-Cover" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Album Cover" } }
+      }
+    },
+    "design.classicLabel" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Klassisches Label" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Classic Label" } }
+      }
+    },
+    "design.sleeve" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Cover & Platte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cover & Record" } }
+      }
+    },
+    "menu.design" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Design" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Design" } }
+      }
+    },
+    "menu.launchAtLogin" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Beim Anmelden starten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch at Login" } }
+      }
+    },
+    "menu.noTrack" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Wiedergabe" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Nothing playing" } }
+      }
+    },
+    "menu.quit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vinylette beenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quit Vinylette" } }
+      }
+    },
+    "menu.toggleWidget" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vinylette anzeigen/ausblenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show/Hide Vinylette" } }
+      }
+    },
+    "permission.allow" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erlauben" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Allow" } }
+      }
+    },
+    "permission.missing" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spotify-Berechtigung fehlt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Spotify permission required" } }
+      }
+    },
+    "service.error.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Einstellung für den automatischen Start konnte nicht geändert werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The launch-at-login setting could not be changed." } }
+      }
+    },
+    "service.error.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einstellung nicht geändert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Setting Not Changed" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
