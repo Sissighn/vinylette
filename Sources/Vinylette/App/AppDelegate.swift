@@ -10,7 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         panel = FloatingPanel(
             rootView: VinylView().environmentObject(spotify),
-            size: NSSize(width: 300, height: 340)
+            size: NSSize(width: 300, height: 270)
         )
         panel.orderFrontRegardless()
 
