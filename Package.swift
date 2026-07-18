@@ -3,11 +3,13 @@ import PackageDescription
 
 let package = Package(
     name: "Vinylette",
+    defaultLocalization: "en",
     platforms: [.macOS(.v13)],
     targets: [
         .executableTarget(
             name: "Vinylette",
-            path: "Sources/Vinylette"
+            path: "Sources/Vinylette",
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "VinyletteTests",
