@@ -1,8 +1,8 @@
 import AppKit
 import SwiftUI
 
-/// Borderless, non-activating panel that floats above all windows,
-/// follows every Space, and can be dragged anywhere by its background.
+/// Borderless, non-activating panel that lives on the desktop like a widget:
+/// above the wallpaper and icons, but beneath every app window.
 final class FloatingPanel: NSPanel {
     init<Content: View>(rootView: Content, size: NSSize) {
         super.init(
@@ -11,12 +11,14 @@ final class FloatingPanel: NSPanel {
             backing: .buffered,
             defer: false
         )
-        level = .floating
+        // One step below normal app windows: apps cover the widget, but it
+        // stays above the desktop, its icons, and the system widget layer.
+        level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.normalWindow)) - 1)
         isOpaque = false
         backgroundColor = .clear
         hasShadow = false
         isMovableByWindowBackground = true
-        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         hidesOnDeactivate = false
         contentView = NSHostingView(rootView: rootView)
         positionTopTrailing(margin: 24)
