@@ -68,20 +68,19 @@ final class SpotifyController: ObservableObject {
             return t & "‖" & a & "‖" & al & "‖" & art & "‖" & ps
         end tell
         """
-        guard let result = AppleScriptRunner.run(script) else { return }
-        let parts = result.components(separatedBy: "‖")
-        guard parts.count == 5 else { return }
+        guard let result = AppleScriptRunner.run(script),
+              let track = SpotifyTrack.parse(result) else { return }
 
         DispatchQueue.main.async {
             self.isRunning = true
-            self.trackName = parts[0]
-            self.artistName = parts[1]
-            self.albumName = parts[2]
-            self.isPlaying = parts[4] == "playing"
+            self.trackName = track.name
+            self.artistName = track.artist
+            self.albumName = track.album
+            self.isPlaying = track.isPlaying
         }
-        if parts[3] != artworkURLString {
-            artworkURLString = parts[3]
-            fetchArtwork(from: parts[3])
+        if track.artworkURL != artworkURLString {
+            artworkURLString = track.artworkURL
+            fetchArtwork(from: track.artworkURL)
         }
     }
 
