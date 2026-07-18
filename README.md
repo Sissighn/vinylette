@@ -12,6 +12,7 @@
   <a href="https://github.com/Sissighn/vinylette/actions/workflows/ci.yml"><img src="https://github.com/Sissighn/vinylette/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
   <img src="https://img.shields.io/badge/Swift-5.9-F05138?logo=swift&logoColor=white" alt="Swift 5.9">
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-000000?logo=apple&logoColor=white" alt="macOS 13+">
+  <img src="https://img.shields.io/badge/architecture-Universal%202-555555" alt="Universal 2 binary">
   <img src="https://img.shields.io/badge/UI-SwiftUI-blue" alt="SwiftUI">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT license"></a>
 </p>
@@ -57,9 +58,49 @@ the widget. The choice is remembered across launches.
 
 ## Build and Run
 
+`build.sh` cross-compiles the app for Apple Silicon and Intel, combines both
+executables into a Universal 2 binary, enables the Hardened Runtime, embeds the
+Apple Events entitlement required for Spotify, and verifies the resulting app
+bundle.
+
 ```sh
 ./build.sh
 open Vinylette.app
+```
+
+By default the local build is signed ad hoc. This is free and suitable for
+development, but a Mac that downloads the app will still require the user to
+approve its first launch through Finder's **Open** command. Removing that
+Gatekeeper step requires a paid Developer ID certificate and notarization.
+
+## Release Artifacts
+
+Create the same distributable files that CI validates:
+
+```sh
+./release.sh
+```
+
+The `dist/` directory contains:
+
+- a Universal 2 app ZIP
+- a compressed DMG with an Applications shortcut
+- a zipped universal dSYM for crash symbolication
+- `SHA256SUMS` covering every artifact
+
+Pushing a version tag matching `CFBundleShortVersionString` publishes these
+files as a GitHub Release automatically:
+
+```sh
+git tag v1.0
+git push origin v1.0
+```
+
+The scripts are ready for a future Developer ID certificate without changing
+the build pipeline:
+
+```sh
+VINYLETTE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./release.sh
 ```
 
 On first launch, macOS asks whether Vinylette may control Spotify. Confirm with
@@ -115,7 +156,10 @@ swift test
 ```
 
 Unit tests cover the AppleScript response parsing and the design persistence
-model. Tests also run in CI on every push.
+model. CI treats warnings as errors, builds both processor architectures,
+validates localization and property-list resources, verifies the Hardened
+Runtime signature and entitlement, exercises ZIP/DMG integrity, and uploads the
+release artifacts on every push.
 
 ## License
 
