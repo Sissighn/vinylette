@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" width="140" alt="Vinylette logo">
+  <img src="Resources/AppIcon.png" width="140" alt="Vinylette app icon">
 </p>
 
 <h1 align="center">Vinylette</h1>
@@ -12,9 +12,13 @@
   <a href="https://github.com/Sissighn/vinylette/actions/workflows/ci.yml"><img src="https://github.com/Sissighn/vinylette/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
   <img src="https://img.shields.io/badge/Swift-5.9-F05138?logo=swift&logoColor=white" alt="Swift 5.9">
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-000000?logo=apple&logoColor=white" alt="macOS 13+">
-  <img src="https://img.shields.io/badge/architecture-Universal%202-555555" alt="Universal 2 binary">
+  <img src="https://img.shields.io/badge/Universal_2-arm64%20%2B%20x86__64-555555" alt="Universal 2 binary for arm64 and x86_64">
   <img src="https://img.shields.io/badge/UI-SwiftUI-blue" alt="SwiftUI">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT license"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Sissighn/vinylette/releases/latest"><img src="https://img.shields.io/badge/Download-Latest_Release-8B5E68?style=for-the-badge&logo=github&logoColor=white" alt="Download the latest Vinylette release"></a>
 </p>
 
 Vinylette lives on your desktop like a native widget: above the wallpaper and
@@ -92,9 +96,11 @@ Pushing a version tag matching `CFBundleShortVersionString` publishes these
 files as a GitHub Release automatically:
 
 ```sh
-git tag v1.0
-git push origin v1.0
+git tag v1.0.0
+git push origin v1.0.0
 ```
+
+Release history is documented in the [changelog](CHANGELOG.md).
 
 The scripts are ready for a future Developer ID certificate without changing
 the build pipeline:
@@ -148,6 +154,55 @@ Sources/Vinylette
     ├── WidgetLayout.swift      Shared dimensions and motion constants
     └── Palette.swift
 ```
+
+## Engineering Decisions
+
+### AppleScript instead of the Spotify Web API
+
+Vinylette is a local companion for the Spotify desktop app, not a standalone
+Spotify client. AppleScript keeps that scope honest: it needs no OAuth flow,
+client secret, account login, token storage, callback server, or playback
+device management. It is used only for the initial state, cover-art URL lookup,
+and playback commands.
+
+### A desktop-level `NSPanel`
+
+The product is meant to feel like an object sitting on the desktop. A
+borderless, non-activating panel can stay above the wallpaper and desktop icons
+while remaining below ordinary application windows, appear on every Space,
+and avoid taking focus or adding a Dock icon.
+
+### Event-driven playback updates
+
+Spotify's distributed playback notification updates the UI immediately when a
+track or playback state changes. This avoids periodic polling, reduces idle
+work, and keeps the record and tonearm synchronized with the player.
+
+## Limitations
+
+- Vinylette supports the Spotify desktop app only; it does not follow Spotify
+  Web Player, mobile devices, Apple Music, or other players.
+- The integration relies on Spotify's AppleScript dictionary and distributed
+  notification payload. Spotify could change these undocumented interfaces in
+  a future desktop release.
+- Album artwork needs a network connection because it is downloaded from the
+  cover URL supplied by Spotify.
+- The free release is signed ad hoc. On another Mac, the first launch must be
+  approved with Finder's **Open** command; seamless Gatekeeper distribution
+  requires a paid Developer ID certificate and notarization.
+- The current widget has a fixed visual size and requires macOS 13 or later.
+
+## Privacy
+
+Vinylette has no analytics, telemetry, advertising, account system, or backend,
+and it never records, streams, or uploads audio. It reads playback metadata
+from the local Spotify app and downloads the current cover from the URL Spotify
+provides. Design choice, window position, and launch-at-login preference stay
+on the Mac in the standard system stores.
+
+The artwork in the README screenshots is a fictional cover created specifically
+for this repository, not third-party album artwork. Its provenance and prompt
+are documented in [`docs/assets`](docs/assets/README.md).
 
 ## Testing
 
