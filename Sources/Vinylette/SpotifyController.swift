@@ -43,8 +43,8 @@ final class SpotifyController: ObservableObject {
             set a to artist of current track
             set al to album of current track
             set art to artwork url of current track
-            set st to player state as string
-            return t & "‖" & a & "‖" & al & "‖" & art & "‖" & st
+            set ps to player state as string
+            return t & "‖" & a & "‖" & al & "‖" & art & "‖" & ps
         end tell
         """
         guard let result = run(script) else { return }
