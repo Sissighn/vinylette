@@ -1,0 +1,16 @@
+"accessibility.design" = "Design auswählen";
+"accessibility.openAutomationSettings" = "Systemeinstellungen für Automation öffnen";
+"accessibility.pause" = "Musik pausieren";
+"accessibility.play" = "Musik abspielen";
+"design.albumCover" = "Album-Cover";
+"design.classicLabel" = "Klassisches Label";
+"design.sleeve" = "Cover & Platte";
+"menu.design" = "Design";
+"menu.launchAtLogin" = "Beim Anmelden starten";
+"menu.noTrack" = "Keine Wiedergabe";
+"menu.quit" = "Vinylette beenden";
+"menu.toggleWidget" = "Vinylette anzeigen/ausblenden";
+"permission.allow" = "Erlauben";
+"permission.missing" = "Spotify-Berechtigung fehlt";
+"service.error.message" = "Die Einstellung für den automatischen Start konnte nicht geändert werden.";
+"service.error.title" = "Einstellung nicht geändert";
