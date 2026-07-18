@@ -61,6 +61,46 @@ final class SpotifyTrackTests: XCTestCase {
     }
 }
 
+final class SpotifyNotificationTests: XCTestCase {
+    func testBuildsTrackFromPlaybackNotification() {
+        let userInfo: [AnyHashable: Any] = [
+            "Name": "The Other Side",
+            "Artist": "Stephen Sanchez",
+            "Album": "Angel Face",
+            "Player State": "Playing",
+        ]
+
+        let track = SpotifyTrack.from(userInfo: userInfo)
+
+        XCTAssertEqual(track?.name, "The Other Side")
+        XCTAssertEqual(track?.artist, "Stephen Sanchez")
+        XCTAssertEqual(track?.album, "Angel Face")
+        XCTAssertEqual(track?.isPlaying, true)
+        XCTAssertEqual(track?.artworkURL, "", "The notification payload carries no artwork URL")
+    }
+
+    func testPausedNotificationIsNotPlaying() {
+        let userInfo: [AnyHashable: Any] = ["Player State": "Paused"]
+
+        XCTAssertEqual(SpotifyTrack.from(userInfo: userInfo)?.isPlaying, false)
+    }
+
+    func testMissingMetadataFallsBackToEmptyStrings() {
+        let userInfo: [AnyHashable: Any] = ["Player State": "Playing"]
+
+        let track = SpotifyTrack.from(userInfo: userInfo)
+
+        XCTAssertEqual(track?.name, "")
+        XCTAssertEqual(track?.artist, "")
+        XCTAssertEqual(track?.album, "")
+    }
+
+    func testPayloadWithoutPlayerStateIsRejected() {
+        XCTAssertNil(SpotifyTrack.from(userInfo: ["Name": "Song"]))
+        XCTAssertNil(SpotifyTrack.from(userInfo: [:]))
+    }
+}
+
 final class WidgetDesignTests: XCTestCase {
     func testEveryCaseHasADisplayName() {
         for design in WidgetDesign.allCases {
