@@ -3,18 +3,88 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
 
 jobs:
   build-and-test:
-    name: Build & Test
+    name: Test & Package Universal App
     runs-on: macos-15
+    permissions:
+      contents: read
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
-        run: swift build -c release
+      - name: Test with warnings as errors
+        run: swift test -Xswiftc -warnings-as-errors
 
-      - name: Test
-        run: swift test
+      - name: Validate source resources
+        run: |
+          plutil -lint \
+            Resources/Info.plist \
+            Resources/Vinylette.entitlements \
+            Resources/en.lproj/InfoPlist.strings \
+            Resources/de.lproj/InfoPlist.strings
+          catalog_output="$(mktemp -d)"
+          xcrun xcstringstool compile \
+            Sources/Vinylette/Resources/Localizable.xcstrings \
+            --output-directory "$catalog_output" \
+            --language en \
+            --language de
+
+      - name: Build release artifacts
+        run: ./release.sh
+
+      - name: Verify app bundle
+        run: |
+          executable="Vinylette.app/Contents/MacOS/Vinylette"
+          lipo "$executable" -verify_arch arm64 x86_64
+          codesign --verify --deep --strict --verbose=2 Vinylette.app
+          codesign -dv --verbose=4 Vinylette.app 2>&1 | grep -q 'flags=.*runtime'
+          entitlements="$(mktemp)"
+          codesign -d --entitlements :- Vinylette.app 2>/dev/null > "$entitlements"
+          /usr/libexec/PlistBuddy \
+            -c 'Print :com.apple.security.automation.apple-events' \
+            "$entitlements" \
+            | grep -q true
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vinylette-macOS
+          path: |
+            dist/*.zip
+            dist/*.dmg
+            dist/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  publish-release:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-and-test
+    runs-on: macos-15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify tag matches app version
+        run: |
+          version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist)"
+          test "$GITHUB_REF_NAME" = "v$version"
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Vinylette-macOS
+          path: dist
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --generate-notes
