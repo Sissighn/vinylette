@@ -7,9 +7,10 @@ swift build -c release
 
 APP=Vinylette.app
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/Vinylette "$APP/Contents/MacOS/"
 cp Resources/Info.plist "$APP/Contents/"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 codesign --force --deep --sign - "$APP"
 
 echo "✓ Fertig! Starten mit: open $APP"
