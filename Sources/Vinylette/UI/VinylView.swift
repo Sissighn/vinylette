@@ -44,7 +44,7 @@ struct VinylView: View {
                 let elapsed = currentFrame.timeIntervalSince(previousFrame)
                 previousFrame = currentFrame
 
-                // Gentle widget spin: 50°/s, one turn every ~7 s.
+                // A 33⅓ RPM LP turns at 200° per second.
                 angle = (angle + elapsed * 50).truncatingRemainder(dividingBy: 360)
             }
         }
@@ -78,7 +78,7 @@ struct VinylView: View {
                 .offset(x: -18)
 
             tonearmButton
-                .offset(x: 96, y: -50)
+                .offset(x: 55, y: -14)
         }
     }
 
@@ -86,18 +86,20 @@ struct VinylView: View {
 
     private var sleeve: some View {
         ZStack {
+            albumSleeve
+                .offset(x: -36)
+
             VinylDisc(artist: spotify.artistName,
                       track: spotify.trackName,
                       angle: angle)
                 .frame(width: 165, height: 165)
                 .offset(x: 52)
 
-            albumSleeve
-                .offset(x: -36)
-
             tonearmButton
-                .scaleEffect(0.85)
-                .offset(x: 102, y: -28)
+                .scaleEffect(0.82)
+                // Follow the record's rightward offset: the stylus should sit
+                // on the outer grooves, not across the paper label.
+                .offset(x: 91, y: -11)
         }
     }
 
@@ -130,7 +132,7 @@ struct VinylView: View {
     private var tonearmButton: some View {
         Button(action: spotify.playPause) {
             Tonearm(playing: spotify.isPlaying)
-                .frame(width: 64, height: 132)
+                .frame(width: 110, height: 160)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
