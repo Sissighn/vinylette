@@ -23,7 +23,9 @@ struct VinylView: View {
     var body: some View {
         VStack(spacing: 10) {
             deck
-            trackInfo
+            if spotify.isRunning && !spotify.trackName.isEmpty {
+                trackInfo
+            }
         }
         .padding(12)
         .onReceive(spin) { _ in
@@ -106,14 +108,10 @@ struct VinylView: View {
         )
     }
 
-    private var title: String {
-        if !spotify.isRunning { return "Spotify schläft …" }
-        return spotify.trackName.isEmpty ? "Nichts in der Warteschlange" : spotify.trackName
-    }
+    private var title: String { spotify.trackName }
 
     private var subtitle: String {
-        if !spotify.isRunning { return "öffne Spotify, mon amour ♡" }
-        return spotify.artistName.isEmpty ? "♡" : spotify.artistName
+        spotify.artistName.isEmpty ? "♡" : spotify.artistName
     }
 }
 
