@@ -40,8 +40,8 @@ the widget. The choice is remembered across launches.
 - Desktop-widget window behavior: always on the desktop, never above your apps,
   present on every Space
 - Menu bar item to show, hide, and quit the widget
-- No login and no API keys; playback state is read from the local Spotify app
-  via AppleScript
+- No login and no API keys; playback state arrives instantly via Spotify's
+  distributed notifications, commands go through AppleScript
 
 ## Requirements
 
@@ -63,10 +63,17 @@ Privacy & Security > Automation.
 ## Architecture
 
 The app is a SwiftUI view hosted in a borderless, non-activating `NSPanel`
-pinned one window level below normal application windows. A controller polls
-the Spotify desktop app once per second via AppleScript and publishes the
-playback state to the UI; playback commands go the same route. This avoids
-OAuth, API keys, and any network dependency beyond fetching cover art.
+pinned one window level below normal application windows.
+
+Playback state is event-driven rather than polled: the controller subscribes
+to Spotify's `com.spotify.client.PlaybackStateChanged` distributed
+notification, so track changes reach the UI instantly and the app does no
+periodic work. AppleScript is only used in three places — reading the initial
+state at launch, looking up cover art URLs, and sending playback commands.
+Script failures are logged via `os.Logger` and surfaced in the UI: when the
+Automation permission is missing, the widget shows a hint with a direct
+shortcut to the relevant System Settings pane. This design avoids OAuth, API
+keys, and any network dependency beyond fetching cover art.
 
 ```
 Sources/Vinylette
