@@ -23,11 +23,31 @@ final class SpotifyController: ObservableObject {
 
     // MARK: - Playback controls
 
-    func playPause() { AppleScriptRunner.run("tell application \"Spotify\" to playpause"); poll() }
-    func nextTrack() { AppleScriptRunner.run("tell application \"Spotify\" to next track"); poll() }
-    func previousTrack() { AppleScriptRunner.run("tell application \"Spotify\" to previous track"); poll() }
+    func playPause() {
+        // Move the UI immediately. Spotify can briefly report its previous
+        // state directly after playpause, so reconcile after a short delay.
+        isPlaying.toggle()
+        AppleScriptRunner.run("tell application \"Spotify\" to playpause")
+        poll(after: 0.25)
+    }
+
+    func nextTrack() {
+        AppleScriptRunner.run("tell application \"Spotify\" to next track")
+        poll(after: 0.25)
+    }
+
+    func previousTrack() {
+        AppleScriptRunner.run("tell application \"Spotify\" to previous track")
+        poll(after: 0.25)
+    }
 
     // MARK: - Polling
+
+    private func poll(after delay: TimeInterval) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.poll()
+        }
+    }
 
     private func poll() {
         guard isSpotifyRunning() else {
