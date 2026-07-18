@@ -10,9 +10,9 @@ enum WidgetDesign: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .classicLabel: return "Klassisches Label"
-        case .albumCover: return "Album-Cover"
-        case .sleeve: return "Cover & Platte"
+        case .classicLabel: return L10n.text("design.classicLabel")
+        case .albumCover: return L10n.text("design.albumCover")
+        case .sleeve: return L10n.text("design.sleeve")
         }
     }
 }
