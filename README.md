@@ -121,7 +121,9 @@ pinned one window level below normal application windows.
 Playback state is event-driven rather than polled: the controller subscribes
 to Spotify's `com.spotify.client.PlaybackStateChanged` distributed
 notification, so track changes reach the UI instantly and the app does no
-periodic work. AppleScript is only used in three places — reading the initial
+periodic work. Notifications cross an explicit Main Actor boundary and reduce
+into one playback state; stale artwork requests are cancelled and ignored.
+AppleScript is only used in three places — reading the initial
 state at launch, looking up cover art URLs, and sending playback commands.
 Script failures are logged via `os.Logger` and surfaced in the UI: when the
 Automation permission is missing, the widget shows a hint with a direct
@@ -143,7 +145,8 @@ Sources/Vinylette
 │   └── StatusBarController.swift
 ├── Spotify
 │   ├── SpotifyController.swift Playback state and commands (event-driven)
-│   ├── SpotifyTrack.swift      Playback-state model and payload parsing
+│   ├── PlaybackState.swift     Single playback state and recoverable errors
+│   ├── SpotifyTrack.swift      Track metadata and boundary payload parsing
 │   └── AppleScriptRunner.swift
 └── UI
     ├── VinylView.swift         Main view and the three design layouts
@@ -210,11 +213,27 @@ are documented in [`docs/assets`](docs/assets/README.md).
 swift test
 ```
 
-Unit tests cover the AppleScript response parsing and the design persistence
-model. CI treats warnings as errors, builds both processor architectures,
-validates localization and property-list resources, verifies the Hardened
-Runtime signature and entitlement, exercises ZIP/DMG integrity, and uploads the
-release artifacts on every push.
+Unit tests cover the Spotify state machine end to end through injected
+dependencies: parsing of AppleScript responses and notification payloads,
+command dispatch with optimistic updates and rollback, launch and termination
+transitions, and out-of-order artwork downloads that must never overwrite a
+newer track. Pure logic that used to hide in the UI layer is extracted and
+tested directly: the multi-screen clamping geometry of the floating panel,
+design persistence through a central settings type, and the launch-at-login
+menu behavior behind a `LoginItemManaging` protocol. A localization suite
+keeps the string catalog, both compiled `.lproj` tables, and every key
+referenced from code in sync.
+
+Localized strings live once, in `Localizable.xcstrings`; the `.lproj` tables
+are generated from it via `scripts/generate-strings.sh` and never edited by
+hand. Typed accessors (`L10n.Menu.quit` instead of raw key strings) keep the
+call sites safe from typos.
+
+CI lints with `swift-format`, treats warnings as errors, builds both processor
+architectures, fails when the generated string tables drift from the catalog,
+validates property-list resources, verifies the Hardened Runtime signature and
+entitlement, exercises ZIP/DMG integrity, and uploads the release artifacts on
+every push.
 
 ## License
 
