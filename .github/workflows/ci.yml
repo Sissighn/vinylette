@@ -17,6 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Lint
+        run: swift format lint --strict --recursive Sources Tests Package.swift
+
       - name: Test with warnings as errors
         run: swift test -Xswiftc -warnings-as-errors
 
@@ -26,13 +29,15 @@ jobs:
             Resources/Info.plist \
             Resources/Vinylette.entitlements \
             Resources/en.lproj/InfoPlist.strings \
-            Resources/de.lproj/InfoPlist.strings
-          catalog_output="$(mktemp -d)"
-          xcrun xcstringstool compile \
-            Sources/Vinylette/Resources/Localizable.xcstrings \
-            --output-directory "$catalog_output" \
-            --language en \
-            --language de
+            Resources/de.lproj/InfoPlist.strings \
+            Sources/Vinylette/Resources/en.lproj/Localizable.strings \
+            Sources/Vinylette/Resources/de.lproj/Localizable.strings
+
+      - name: Verify string tables are generated from the catalog
+        run: |
+          ./scripts/generate-strings.sh
+          git diff --exit-code -- 'Sources/Vinylette/Resources/*.lproj' \
+            || { echo "::error::.strings files are out of sync — run scripts/generate-strings.sh"; exit 1; }
 
       - name: Build release artifacts
         run: ./release.sh
