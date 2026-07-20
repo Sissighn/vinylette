@@ -10,6 +10,8 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Three vinyl designs: Classic Label, Album Cover, and Sleeve
 - Event-driven Spotify playback state, cover art, and transport controls
+- Unified playback state with command rollback, cancellable artwork loading,
+  and visible integration errors
 - Clickable animated gold tonearm and visibility-aware record animation
 - Desktop-level panel with saved position and multi-display safety
 - Menu bar controls, launch-at-login support, and design selection
