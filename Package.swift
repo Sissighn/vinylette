@@ -15,6 +15,6 @@ let package = Package(
             name: "VinyletteTests",
             dependencies: ["Vinylette"],
             path: "Tests/VinyletteTests"
-        )
+        ),
     ]
 )
