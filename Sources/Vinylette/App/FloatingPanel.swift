@@ -65,52 +65,19 @@ final class FloatingPanel: NSPanel {
     private func positionTopTrailing(margin: CGFloat) {
         guard let screen = NSScreen.main else { return }
         let visible = screen.visibleFrame
-        setFrameOrigin(NSPoint(x: visible.maxX - frame.width - margin,
-                               y: visible.maxY - frame.height - margin))
+        setFrameOrigin(
+            NSPoint(
+                x: visible.maxX - frame.width - margin,
+                y: visible.maxY - frame.height - margin))
     }
 
     /// Keeps the complete widget reachable after a display is unplugged or
-    /// its resolution/arrangement changes.
+    /// its resolution/arrangement changes. The math lives in `PanelGeometry`.
     private func clampToVisibleScreen() {
-        let screens = NSScreen.screens
-        guard !screens.isEmpty else { return }
-
-        let currentFrame = frame
-        let intersections = screens.map {
-            ($0, Self.area(of: currentFrame.intersection($0.visibleFrame)))
-        }
-
-        let targetScreen: NSScreen
-        if let bestVisible = intersections.max(by: { $0.1 < $1.1 }), bestVisible.1 > 0 {
-            targetScreen = bestVisible.0
-        } else {
-            let center = NSPoint(x: currentFrame.midX, y: currentFrame.midY)
-            targetScreen = screens.min {
-                Self.squaredDistance(from: center, to: $0.visibleFrame)
-                    < Self.squaredDistance(from: center, to: $1.visibleFrame)
-            } ?? screens[0]
-        }
-
-        let visible = targetScreen.visibleFrame
-        let maxX = max(visible.minX, visible.maxX - currentFrame.width)
-        let maxY = max(visible.minY, visible.maxY - currentFrame.height)
-        let clampedOrigin = NSPoint(
-            x: min(max(currentFrame.minX, visible.minX), maxX),
-            y: min(max(currentFrame.minY, visible.minY), maxY)
-        )
-
-        guard clampedOrigin != currentFrame.origin else { return }
+        let visibleFrames = NSScreen.screens.map(\.visibleFrame)
+        guard let clampedOrigin = PanelGeometry.clampedOrigin(of: frame, within: visibleFrames),
+            clampedOrigin != frame.origin
+        else { return }
         setFrameOrigin(clampedOrigin)
-    }
-
-    private static func area(of rect: NSRect) -> CGFloat {
-        guard !rect.isNull, !rect.isEmpty else { return 0 }
-        return rect.width * rect.height
-    }
-
-    private static func squaredDistance(from point: NSPoint, to rect: NSRect) -> CGFloat {
-        let dx = max(rect.minX - point.x, 0, point.x - rect.maxX)
-        let dy = max(rect.minY - point.y, 0, point.y - rect.maxY)
-        return dx * dx + dy * dy
     }
 }
