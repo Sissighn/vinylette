@@ -1,16 +1,48 @@
-"accessibility.design" = "Choose design";
-"accessibility.openAutomationSettings" = "Open Automation settings";
-"accessibility.pause" = "Pause music";
-"accessibility.play" = "Play music";
-"design.albumCover" = "Album Cover";
-"design.classicLabel" = "Classic Label";
-"design.sleeve" = "Cover & Record";
-"menu.design" = "Design";
-"menu.launchAtLogin" = "Launch at Login";
-"menu.noTrack" = "Nothing playing";
-"menu.quit" = "Quit Vinylette";
-"menu.toggleWidget" = "Show/Hide Vinylette";
-"permission.allow" = "Allow";
-"permission.missing" = "Spotify permission required";
-"service.error.message" = "The launch-at-login setting could not be changed.";
-"service.error.title" = "Setting Not Changed";
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>accessibility.design</key>
+	<string>Choose design</string>
+	<key>accessibility.openAutomationSettings</key>
+	<string>Open Automation settings</string>
+	<key>accessibility.pause</key>
+	<string>Pause music</string>
+	<key>accessibility.play</key>
+	<string>Play music</string>
+	<key>design.albumCover</key>
+	<string>Album Cover</string>
+	<key>design.classicLabel</key>
+	<string>Classic Label</string>
+	<key>design.sleeve</key>
+	<string>Cover &amp; Record</string>
+	<key>menu.design</key>
+	<string>Design</string>
+	<key>menu.launchAtLogin</key>
+	<string>Launch at Login</string>
+	<key>menu.noTrack</key>
+	<string>Nothing playing</string>
+	<key>menu.quit</key>
+	<string>Quit Vinylette</string>
+	<key>menu.toggleWidget</key>
+	<string>Show/Hide Vinylette</string>
+	<key>permission.allow</key>
+	<string>Allow</string>
+	<key>permission.missing</key>
+	<string>Spotify permission required</string>
+	<key>service.error.message</key>
+	<string>The launch-at-login setting could not be changed.</string>
+	<key>service.error.title</key>
+	<string>Setting Not Changed</string>
+	<key>spotify.error.artwork</key>
+	<string>Album artwork could not be loaded.</string>
+	<key>spotify.error.command</key>
+	<string>Spotify did not accept the playback command.</string>
+	<key>spotify.error.dismiss</key>
+	<string>Dismiss</string>
+	<key>spotify.error.state</key>
+	<string>Spotify state could not be updated.</string>
+	<key>spotify.unavailable</key>
+	<string>Open Spotify to start listening</string>
+</dict>
+</plist>
