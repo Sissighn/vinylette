@@ -96,6 +96,36 @@
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Einstellung nicht geändert" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Setting Not Changed" } }
       }
+    },
+    "spotify.error.artwork" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das Album-Cover konnte nicht geladen werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Album artwork could not be loaded." } }
+      }
+    },
+    "spotify.error.command" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spotify konnte den Wiedergabebefehl nicht ausführen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Spotify did not accept the playback command." } }
+      }
+    },
+    "spotify.error.dismiss" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schließen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dismiss" } }
+      }
+    },
+    "spotify.error.state" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Spotify-Status konnte nicht aktualisiert werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Spotify state could not be updated." } }
+      }
+    },
+    "spotify.unavailable" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffne Spotify, um Musik abzuspielen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Spotify to start listening" } }
+      }
     }
   },
   "version" : "1.0"
