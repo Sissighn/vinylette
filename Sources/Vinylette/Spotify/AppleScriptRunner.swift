@@ -2,13 +2,19 @@ import Foundation
 import os
 
 /// Error surfaced by a failed AppleScript compilation or execution.
-struct AppleScriptError: Error {
+struct AppleScriptError: Error, Equatable {
     let code: Int
     let message: String
 
     /// macOS refused to send Apple Events to the target app because the user
     /// has not granted (or has revoked) the Automation permission.
     var isPermissionDenied: Bool { code == -1743 }
+
+    /// Spotify is not running or its Apple Event connection disappeared.
+    var isSpotifyUnavailable: Bool { code == -600 || code == -609 }
+
+    /// Spotify is running but currently exposes no track.
+    var isNoCurrentTrack: Bool { code == -1728 }
 }
 
 /// Compiles and runs AppleScript snippets, returning their string result.
