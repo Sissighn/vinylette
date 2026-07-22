@@ -7,8 +7,10 @@ struct PlaybackControls: View {
     var body: some View {
         HStack(spacing: 22) {
             ControlButton(symbol: "backward.fill") { spotify.previousTrack() }
-            ControlButton(symbol: spotify.isPlaying ? "pause.fill" : "play.fill",
-                          prominent: true) { spotify.playPause() }
+            ControlButton(
+                symbol: spotify.state.isPlaying ? "pause.fill" : "play.fill",
+                prominent: true
+            ) { spotify.playPause() }
             ControlButton(symbol: "forward.fill") { spotify.nextTrack() }
         }
         .padding(.horizontal, 16)
@@ -18,6 +20,8 @@ struct PlaybackControls: View {
                 .overlay(Capsule().strokeBorder(Palette.gold.opacity(0.5), lineWidth: 1))
                 .shadow(color: Palette.cocoa.opacity(0.2), radius: 6, y: 2)
         )
+        .disabled(!spotify.state.canControlPlayback)
+        .opacity(spotify.state.canControlPlayback ? 1 : 0.55)
     }
 }
 
