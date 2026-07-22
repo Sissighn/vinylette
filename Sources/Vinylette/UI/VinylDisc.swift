@@ -41,7 +41,7 @@ struct VinylDisc: View {
                 .shadow(color: .black.opacity(0.5), radius: 9, y: 5)
 
             // Closely spaced grooves with slightly irregular highlights.
-            ForEach(0..<28) { i in
+            ForEach(0 ..< 28) { i in
                 Circle()
                     .strokeBorder(
                         i.isMultiple(of: 5)
@@ -133,6 +133,8 @@ struct VinylDisc: View {
                 Image(nsImage: artwork)
                     .resizable()
                     .scaledToFill()
+                    .id(ObjectIdentifier(artwork))
+                    .transition(.opacity)
             } else if track.isEmpty {
                 Text("♡")
                     .font(.system(size: 26, design: .serif))
@@ -155,5 +157,10 @@ struct VinylDisc: View {
                 .padding(.vertical, 14)
             }
         }
+        // Cross-fade when a new cover arrives instead of swapping abruptly.
+        .animation(
+            .easeInOut(duration: WidgetLayout.artworkCrossfadeSeconds),
+            value: artwork.map(ObjectIdentifier.init)
+        )
     }
 }
