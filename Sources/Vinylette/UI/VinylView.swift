@@ -6,14 +6,16 @@ import SwiftUI
 struct VinylView: View {
     @EnvironmentObject var spotify: SpotifyController
     @EnvironmentObject var panelVisibility: PanelVisibility
-    @AppStorage("widgetDesign") private var designRaw = WidgetDesign.classicLabel.rawValue
+    @AppStorage(WidgetSettings.designKey) private var designRaw = WidgetDesign.classicLabel.rawValue
     @State private var angle: Double = 0
     @State private var hovering = false
 
     private var design: WidgetDesign { WidgetDesign(rawValue: designRaw) ?? .classicLabel }
 
     /// Spin only while music plays and someone can actually see the widget.
-    private var isSpinning: Bool { spotify.isPlaying && panelVisibility.isVisible }
+    private var isSpinning: Bool {
+        spotify.state.isPlaying && panelVisibility.isVisible
+    }
 
     var body: some View {
         ZStack {
@@ -36,11 +38,9 @@ struct VinylView: View {
                     .transition(.opacity)
             }
 
-            if spotify.permissionDenied {
-                permissionNotice
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .transition(.opacity)
-            }
+            playbackNotice
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .transition(.opacity)
         }
         .frame(width: WidgetLayout.contentSize.width, height: WidgetLayout.contentSize.height)
         .padding(WidgetLayout.contentPadding)
@@ -79,16 +79,20 @@ struct VinylView: View {
                 )
                 .shadow(color: Palette.cocoa.opacity(0.25), radius: 12, y: 6)
 
-            VinylDisc(artist: spotify.artistName,
-                      track: spotify.trackName,
-                      artwork: spotify.artwork,
-                      style: design == .albumCover ? .cover : .text,
-                      angle: angle)
-                .frame(width: 190, height: 190)
-                .offset(x: -18)
+            VinylDisc(
+                artist: spotify.state.track?.artist ?? "",
+                track: spotify.state.track?.name ?? "",
+                artwork: spotify.state.track?.artwork,
+                style: design == .albumCover ? .cover : .text,
+                angle: angle
+            )
+            .frame(
+                width: WidgetLayout.deckDisc.diameter,
+                height: WidgetLayout.deckDisc.diameter
+            )
+            .offset(x: WidgetLayout.deckDisc.center.x, y: WidgetLayout.deckDisc.center.y)
 
-            tonearmButton
-                .offset(x: 55, y: -14)
+            tonearm(on: WidgetLayout.deckDisc)
         }
     }
 
@@ -97,28 +101,34 @@ struct VinylView: View {
     private var sleeve: some View {
         ZStack {
             albumSleeve
-                .offset(x: -36)
+                .offset(
+                    x: WidgetLayout.sleeveCoverCenter.x,
+                    y: WidgetLayout.sleeveCoverCenter.y
+                )
 
-            VinylDisc(artist: spotify.artistName,
-                      track: spotify.trackName,
-                      angle: angle)
-                .frame(width: 165, height: 165)
-                .offset(x: 52)
+            VinylDisc(
+                artist: spotify.state.track?.artist ?? "",
+                track: spotify.state.track?.name ?? "",
+                angle: angle
+            )
+            .frame(
+                width: WidgetLayout.sleeveDisc.diameter,
+                height: WidgetLayout.sleeveDisc.diameter
+            )
+            .offset(x: WidgetLayout.sleeveDisc.center.x, y: WidgetLayout.sleeveDisc.center.y)
 
-            tonearmButton
-                .scaleEffect(0.82)
-                // Follow the record's rightward offset: the stylus should sit
-                // on the outer grooves, not across the paper label.
-                .offset(x: 91, y: -11)
+            tonearm(on: WidgetLayout.sleeveDisc)
         }
     }
 
     private var albumSleeve: some View {
-        Group {
-            if let artwork = spotify.artwork {
+        ZStack {
+            if let artwork = spotify.state.track?.artwork {
                 Image(nsImage: artwork)
                     .resizable()
                     .scaledToFill()
+                    .id(ObjectIdentifier(artwork))
+                    .transition(.opacity)
             } else {
                 ZStack {
                     Palette.blush
@@ -126,8 +136,14 @@ struct VinylView: View {
                         .font(.system(size: 40, design: .serif))
                         .foregroundColor(Palette.cream)
                 }
+                .transition(.opacity)
             }
         }
+        // Cross-fade when a new cover arrives instead of swapping abruptly.
+        .animation(
+            .easeInOut(duration: WidgetLayout.artworkCrossfadeSeconds),
+            value: spotify.state.track?.artwork.map(ObjectIdentifier.init)
+        )
         .frame(width: 175, height: 175)
         .clipShape(RoundedRectangle(cornerRadius: 6))
         .overlay(
@@ -139,43 +155,96 @@ struct VinylView: View {
 
     // MARK: - Shared pieces
 
+    /// Places the tonearm from the shared anchors in `WidgetLayout`, so every
+    /// design puts the stylus on the same groove of its record.
+    private func tonearm(on disc: WidgetLayout.DiscPlacement) -> some View {
+        let offset = WidgetLayout.tonearmOffset(on: disc)
+        return
+            tonearmButton
+            .scaleEffect(WidgetLayout.tonearmScale(on: disc))
+            .offset(x: offset.x, y: offset.y)
+    }
+
     private var tonearmButton: some View {
         Button(action: spotify.playPause) {
-            Tonearm(playing: spotify.isPlaying)
+            Tonearm(playing: spotify.state.isPlaying)
                 .frame(width: 110, height: 160)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .disabled(!spotify.state.canControlPlayback)
         .accessibilityLabel(
-            spotify.isPlaying ? L10n.text("accessibility.pause") : L10n.text("accessibility.play")
+            spotify.state.isPlaying
+                ? L10n.Accessibility.pause
+                : L10n.Accessibility.play
         )
+    }
+
+    @ViewBuilder
+    private var playbackNotice: some View {
+        switch spotify.state {
+        case .spotifyUnavailable:
+            unavailableNotice
+        case .permissionRequired:
+            permissionNotice
+        case .failed(let error):
+            errorNotice(error)
+        case .idle, .paused, .playing:
+            EmptyView()
+        }
+    }
+
+    private var unavailableNotice: some View {
+        Text(L10n.Spotify.unavailable)
+            .font(.system(size: 11, weight: .semibold, design: .serif))
+            .foregroundColor(Palette.cocoa)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 7)
+            .background(noticeBackground)
     }
 
     /// Shown when macOS blocks Apple Events to Spotify: a short hint with a
     /// direct route to the Automation pane in System Settings.
     private var permissionNotice: some View {
         HStack(spacing: 10) {
-            Text(L10n.text("permission.missing"))
+            Text(L10n.Permission.missing)
                 .font(.system(size: 11, weight: .semibold, design: .serif))
                 .foregroundColor(Palette.cocoa)
-            Button(L10n.text("permission.allow")) { spotify.openAutomationSettings() }
+            Button(L10n.Permission.allow) { spotify.openAutomationSettings() }
                 .buttonStyle(.plain)
                 .font(.system(size: 11, weight: .bold))
                 .foregroundColor(Palette.rose)
-                .accessibilityLabel(L10n.text("accessibility.openAutomationSettings"))
+                .accessibilityLabel(L10n.Accessibility.openAutomationSettings)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 7)
-        .background(
-            Capsule().fill(Palette.cream.opacity(0.96))
-                .overlay(Capsule().strokeBorder(Palette.rose.opacity(0.55), lineWidth: 1))
-                .shadow(color: Palette.cocoa.opacity(0.25), radius: 5, y: 2)
-        )
+        .background(noticeBackground)
+    }
+
+    private func errorNotice(_ error: PlaybackError) -> some View {
+        HStack(spacing: 10) {
+            Text(error.message)
+                .font(.system(size: 11, weight: .semibold, design: .serif))
+                .foregroundColor(Palette.cocoa)
+            Button(L10n.SpotifyError.dismiss) { spotify.dismissError() }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundColor(Palette.rose)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 7)
+        .background(noticeBackground)
+    }
+
+    private var noticeBackground: some View {
+        Capsule().fill(Palette.cream.opacity(0.96))
+            .overlay(Capsule().strokeBorder(Palette.rose.opacity(0.55), lineWidth: 1))
+            .shadow(color: Palette.cocoa.opacity(0.25), radius: 5, y: 2)
     }
 
     private var settingsButton: some View {
         Menu {
-            Picker(L10n.text("menu.design"), selection: $designRaw) {
+            Picker(L10n.Menu.design, selection: $designRaw) {
                 ForEach(WidgetDesign.allCases) { design in
                     Text(design.displayName).tag(design.rawValue)
                 }
@@ -195,6 +264,6 @@ struct VinylView: View {
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
         .fixedSize()
-        .accessibilityLabel(L10n.text("accessibility.design"))
+        .accessibilityLabel(L10n.Accessibility.design)
     }
 }
