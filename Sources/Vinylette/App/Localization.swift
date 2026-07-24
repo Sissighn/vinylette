@@ -18,12 +18,25 @@ enum L10n {
         static let sleeve = text("design.sleeve")
     }
 
+    enum Control {
+        static let next = text("control.next")
+        static let playPause = text("control.playPause")
+        static let previous = text("control.previous")
+        static let repeatPlayback = text("control.repeat")
+    }
+
     enum Menu {
         static let design = text("menu.design")
+        static let hideWidget = text("menu.hideWidget")
         static let launchAtLogin = text("menu.launchAtLogin")
+        static let next = text("menu.next")
         static let noTrack = text("menu.noTrack")
+        static let pause = text("menu.pause")
+        static let play = text("menu.play")
+        static let previous = text("menu.previous")
         static let quit = text("menu.quit")
-        static let toggleWidget = text("menu.toggleWidget")
+        static let repeatPlayback = text("menu.repeat")
+        static let showWidget = text("menu.showWidget")
     }
 
     enum Permission {
