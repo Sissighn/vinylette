@@ -40,7 +40,8 @@ the widget. The choice is remembered across launches.
 
 - Spinning record with a stationary light reflection; only the label rotates,
   as it would on a real turntable
-- Clickable gold tonearm to toggle playback, with previous/next controls on hover
+- Clickable gold tonearm with a Play/Pause tooltip and design-specific hover
+  controls for previous, play/pause, next, and repeat
 - Three selectable designs, persisted across launches
 - Desktop-widget window behavior: always on the desktop, never above your apps,
   present on every Space
@@ -48,8 +49,9 @@ the widget. The choice is remembered across launches.
   changes
 - Pauses its animation while fully covered by other windows, so it consumes
   no energy it cannot show
-- Menu bar item with the current track, design picker, launch-at-login toggle,
-  show/hide, and quit actions
+- Custom monochrome vinyl menu bar item with the current track, complete
+  playback controls, dynamic show/hide action, design picker,
+  launch-at-login toggle, and quit action
 - Localized interface and accessibility labels in English and German
 - No login and no API keys; playback state arrives instantly via Spotify's
   distributed notifications, commands go through AppleScript
@@ -141,6 +143,7 @@ Sources/Vinylette
 │   ├── AppDelegate.swift       Wires panel, menu bar, and Spotify controller
 │   ├── FloatingPanel.swift     Desktop-level, borderless, draggable panel
 │   ├── Localization.swift      String Catalog access for AppKit and SwiftUI
+│   ├── MenuBarVinylIcon.swift  Native monochrome template icon
 │   ├── PanelVisibility.swift   Occlusion state observed by the UI
 │   └── StatusBarController.swift
 ├── Spotify
