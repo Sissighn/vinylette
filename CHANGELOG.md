@@ -15,6 +15,8 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Clickable animated gold tonearm and visibility-aware record animation
 - Desktop-level panel with saved position and multi-display safety
 - Menu bar controls, launch-at-login support, and design selection
+- Design-specific hover controls with repeat, tonearm tooltip, and a custom
+  monochrome vinyl menu bar icon
 - English and German localization plus accessibility labels
 - Universal 2 builds for Apple Silicon and Intel Macs
 - Automated tests, CI validation, and ZIP, DMG, dSYM, and checksum artifacts
