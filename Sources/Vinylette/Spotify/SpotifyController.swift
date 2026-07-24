@@ -135,6 +135,18 @@ final class SpotifyController: ObservableObject {
         executeNonOptimistic(command: "previous track")
     }
 
+    func toggleRepeat() {
+        guard state.canControlPlayback, var track = state.track else { return }
+
+        let fallback = state.fallback
+        track.isRepeating.toggle()
+        state = state.replacingCurrentTrack(with: track)
+        execute(
+            command: "set repeating to \(track.isRepeating)",
+            rollback: fallback
+        )
+    }
+
     func dismissError() {
         guard case .failed(let error) = state else { return }
         state = error.fallback.state
@@ -214,6 +226,8 @@ final class SpotifyController: ObservableObject {
 
         let previousTrack = state.track
         let isSameTrack = previousTrack?.identity == incomingTrack.identity
+        incomingTrack.isRepeating =
+            snapshot.isRepeating ?? previousTrack?.isRepeating ?? false
         if let previousTrack, isSameTrack {
             if incomingTrack.artworkURL.isEmpty {
                 incomingTrack.artworkURL = previousTrack.artworkURL
@@ -259,7 +273,8 @@ final class SpotifyController: ObservableObject {
                 set al to album of current track
                 set art to artwork url of current track
                 set ps to player state as string
-                return t & "\(SpotifyPlaybackSnapshot.separator)" & a & "\(SpotifyPlaybackSnapshot.separator)" & al & "\(SpotifyPlaybackSnapshot.separator)" & art & "\(SpotifyPlaybackSnapshot.separator)" & ps
+                set rp to repeating as string
+                return t & "\(SpotifyPlaybackSnapshot.separator)" & a & "\(SpotifyPlaybackSnapshot.separator)" & al & "\(SpotifyPlaybackSnapshot.separator)" & art & "\(SpotifyPlaybackSnapshot.separator)" & ps & "\(SpotifyPlaybackSnapshot.separator)" & rp
             end tell
             """
 
