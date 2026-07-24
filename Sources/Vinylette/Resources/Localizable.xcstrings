@@ -25,6 +25,30 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Play music" } }
       }
     },
+    "control.next" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nächster Titel" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Next track" } }
+      }
+    },
+    "control.playPause" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiedergabe/Pause" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Play/Pause" } }
+      }
+    },
+    "control.previous" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vorheriger Titel" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous track" } }
+      }
+    },
+    "control.repeat" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiederholen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Repeat" } }
+      }
+    },
     "design.albumCover" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Album-Cover" } },
@@ -49,10 +73,22 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Design" } }
       }
     },
+    "menu.hideWidget" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Widget ausblenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hide Widget" } }
+      }
+    },
     "menu.launchAtLogin" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Beim Anmelden starten" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch at Login" } }
+      }
+    },
+    "menu.next" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nächster Titel" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Next Track" } }
       }
     },
     "menu.noTrack" : {
@@ -61,16 +97,40 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Nothing playing" } }
       }
     },
+    "menu.pause" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Pause" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pause" } }
+      }
+    },
+    "menu.play" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiedergabe" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Play" } }
+      }
+    },
+    "menu.previous" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vorheriger Titel" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous Track" } }
+      }
+    },
     "menu.quit" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Vinylette beenden" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Quit Vinylette" } }
       }
     },
-    "menu.toggleWidget" : {
+    "menu.repeat" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vinylette anzeigen/ausblenden" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show/Hide Vinylette" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiederholen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Repeat" } }
+      }
+    },
+    "menu.showWidget" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Widget anzeigen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Widget" } }
       }
     },
     "permission.allow" : {

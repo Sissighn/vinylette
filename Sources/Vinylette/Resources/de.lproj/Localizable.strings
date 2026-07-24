@@ -10,6 +10,14 @@
 	<string>Musik pausieren</string>
 	<key>accessibility.play</key>
 	<string>Musik abspielen</string>
+	<key>control.next</key>
+	<string>Nächster Titel</string>
+	<key>control.playPause</key>
+	<string>Wiedergabe/Pause</string>
+	<key>control.previous</key>
+	<string>Vorheriger Titel</string>
+	<key>control.repeat</key>
+	<string>Wiederholen</string>
 	<key>design.albumCover</key>
 	<string>Album-Cover</string>
 	<key>design.classicLabel</key>
@@ -18,14 +26,26 @@
 	<string>Cover &amp; Platte</string>
 	<key>menu.design</key>
 	<string>Design</string>
+	<key>menu.hideWidget</key>
+	<string>Widget ausblenden</string>
 	<key>menu.launchAtLogin</key>
 	<string>Beim Anmelden starten</string>
+	<key>menu.next</key>
+	<string>Nächster Titel</string>
 	<key>menu.noTrack</key>
 	<string>Keine Wiedergabe</string>
+	<key>menu.pause</key>
+	<string>Pause</string>
+	<key>menu.play</key>
+	<string>Wiedergabe</string>
+	<key>menu.previous</key>
+	<string>Vorheriger Titel</string>
 	<key>menu.quit</key>
 	<string>Vinylette beenden</string>
-	<key>menu.toggleWidget</key>
-	<string>Vinylette anzeigen/ausblenden</string>
+	<key>menu.repeat</key>
+	<string>Wiederholen</string>
+	<key>menu.showWidget</key>
+	<string>Widget anzeigen</string>
 	<key>permission.allow</key>
 	<string>Erlauben</string>
 	<key>permission.missing</key>
