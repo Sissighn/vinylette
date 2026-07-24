@@ -33,6 +33,15 @@ final class SpotifySnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot?.track?.name, "Beautiful")
     }
 
+    func testParsesRepeatStateFromFullAppleScriptResponse() {
+        let raw = ["Song", "Artist", "Album", "", "playing", "true"]
+            .joined(separator: SpotifyPlaybackSnapshot.separator)
+
+        let snapshot = SpotifyPlaybackSnapshot.parse(raw)
+
+        XCTAssertEqual(snapshot?.isRepeating, true)
+    }
+
     func testKeepsMetadataWithSpecialCharactersIntact() {
         let raw = [
             "Don't Stop | Live & Loud", "AC/DC; Friends", "Album \"X\"",
@@ -135,6 +144,29 @@ final class SpotifyControllerTests: XCTestCase {
         XCTAssertEqual(error.kind, .command)
         XCTAssertFalse(controller.state.isPlaying, "The optimistic play state must be rolled back")
         XCTAssertEqual(controller.state.track, track)
+    }
+
+    @MainActor
+    func testFailedRepeatToggleRollsBackAndSurfacesError() {
+        let track = SpotifyTrack(
+            name: "Song",
+            artist: "Artist",
+            album: "Album",
+            isRepeating: false
+        )
+        let controller = makeController(runScript: { _ in
+            .failure(AppleScriptError(code: -1, message: "Command failed"))
+        })
+        controller.receive(SpotifyPlaybackSnapshot(playerState: .playing, track: track))
+
+        controller.toggleRepeat()
+
+        guard case .failed(let error) = controller.state else {
+            return XCTFail("Expected a visible failure state")
+        }
+        XCTAssertEqual(error.kind, .command)
+        XCTAssertFalse(controller.state.isRepeating)
+        XCTAssertTrue(controller.state.isPlaying)
     }
 
     @MainActor
