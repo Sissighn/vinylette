@@ -21,6 +21,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         statusBar = StatusBarController(
             spotify: spotify,
+            isWidgetVisible: { [weak self] in self?.panel?.isVisible ?? false },
             onToggle: { [weak self] in self?.togglePanel() },
             onQuit: { NSApp.terminate(nil) }
         )
