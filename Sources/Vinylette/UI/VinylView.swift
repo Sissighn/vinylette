@@ -27,14 +27,17 @@ struct VinylView: View {
             }
 
             if hovering {
+                let controls = WidgetLayout.controls(for: design)
+
                 settingsButton
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(10)
                     .transition(.opacity)
 
-                PlaybackControls()
+                PlaybackControls(design: design)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                    .padding(.bottom, 6)
+                    .padding(.bottom, controls.bottomPadding)
+                    .offset(x: controls.horizontalOffset)
                     .transition(.opacity)
             }
 
@@ -173,6 +176,7 @@ struct VinylView: View {
         }
         .buttonStyle(.plain)
         .disabled(!spotify.state.canControlPlayback)
+        .help(L10n.Control.playPause)
         .accessibilityLabel(
             spotify.state.isPlaying
                 ? L10n.Accessibility.pause
