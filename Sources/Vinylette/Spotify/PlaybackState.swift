@@ -31,6 +31,10 @@ enum PlaybackState: Equatable {
         }
     }
 
+    var isRepeating: Bool {
+        track?.isRepeating ?? false
+    }
+
     var isSpotifyAvailable: Bool {
         switch self {
         case .spotifyUnavailable, .permissionRequired:
