@@ -8,10 +8,16 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     private let spotify: SpotifyController
     private let settings: WidgetSettings
     private let launchAtLogin: LaunchAtLogin
+    private let isWidgetVisible: () -> Bool
     private let onToggle: () -> Void
     private let onQuit: () -> Void
 
     private let songItem = NSMenuItem()
+    private let playPauseItem = NSMenuItem()
+    private let previousItem = NSMenuItem()
+    private let nextItem = NSMenuItem()
+    private let repeatItem = NSMenuItem()
+    private let toggleItem = NSMenuItem()
     private let launchAtLoginItem = NSMenuItem()
     private var designItems: [WidgetDesign: NSMenuItem] = [:]
 
@@ -19,6 +25,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         spotify: SpotifyController,
         settings: WidgetSettings = WidgetSettings(),
         launchAtLogin: LaunchAtLogin = LaunchAtLogin(),
+        isWidgetVisible: @escaping () -> Bool,
         onToggle: @escaping () -> Void,
         onQuit: @escaping () -> Void
     ) {
@@ -26,11 +33,14 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         self.spotify = spotify
         self.settings = settings
         self.launchAtLogin = launchAtLogin
+        self.isWidgetVisible = isWidgetVisible
         self.onToggle = onToggle
         self.onQuit = onQuit
         super.init()
 
-        statusItem.button?.title = "♫"
+        statusItem.button?.image = MenuBarVinylIcon.make()
+        statusItem.button?.imagePosition = .imageOnly
+        statusItem.button?.setAccessibilityLabel("Vinylette")
         statusItem.menu = makeMenu()
     }
 
@@ -42,11 +52,39 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         menu.addItem(songItem)
         menu.addItem(.separator())
 
-        let toggleItem = NSMenuItem(
-            title: L10n.Menu.toggleWidget,
-            action: #selector(toggle),
-            keyEquivalent: "v"
+        configurePlaybackItem(
+            playPauseItem,
+            title: L10n.Menu.play,
+            symbol: "play.fill",
+            action: #selector(playPause)
         )
+        configurePlaybackItem(
+            previousItem,
+            title: L10n.Menu.previous,
+            symbol: "backward.fill",
+            action: #selector(previousTrack)
+        )
+        configurePlaybackItem(
+            nextItem,
+            title: L10n.Menu.next,
+            symbol: "forward.fill",
+            action: #selector(nextTrack)
+        )
+        configurePlaybackItem(
+            repeatItem,
+            title: L10n.Menu.repeatPlayback,
+            symbol: "repeat",
+            action: #selector(toggleRepeat)
+        )
+        menu.addItem(playPauseItem)
+        menu.addItem(previousItem)
+        menu.addItem(nextItem)
+        menu.addItem(repeatItem)
+        menu.addItem(.separator())
+
+        toggleItem.title = L10n.Menu.hideWidget
+        toggleItem.action = #selector(toggle)
+        toggleItem.keyEquivalent = "v"
         toggleItem.target = self
         menu.addItem(toggleItem)
 
@@ -85,8 +123,43 @@ final class StatusBarController: NSObject, NSMenuDelegate {
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         updateSongItem()
+        updatePlaybackItems()
+        updateToggleItem()
         updateDesignItems()
         updateLaunchAtLoginItem()
+    }
+
+    private func configurePlaybackItem(
+        _ item: NSMenuItem,
+        title: String,
+        symbol: String,
+        action: Selector
+    ) {
+        item.title = title
+        item.action = action
+        item.target = self
+        item.image = NSImage(systemSymbolName: symbol, accessibilityDescription: title)
+        item.image?.isTemplate = true
+    }
+
+    private func updatePlaybackItems() {
+        let canControl = spotify.state.canControlPlayback
+        for item in [playPauseItem, previousItem, nextItem, repeatItem] {
+            item.isEnabled = canControl
+        }
+
+        let isPlaying = spotify.state.isPlaying
+        playPauseItem.title = isPlaying ? L10n.Menu.pause : L10n.Menu.play
+        playPauseItem.image = NSImage(
+            systemSymbolName: isPlaying ? "pause.fill" : "play.fill",
+            accessibilityDescription: playPauseItem.title
+        )
+        playPauseItem.image?.isTemplate = true
+        repeatItem.state = spotify.state.isRepeating ? .on : .off
+    }
+
+    private func updateToggleItem() {
+        toggleItem.title = isWidgetVisible() ? L10n.Menu.hideWidget : L10n.Menu.showWidget
     }
 
     private func updateSongItem() {
@@ -126,6 +199,11 @@ final class StatusBarController: NSObject, NSMenuDelegate {
             showServiceError(error)
         }
     }
+
+    @objc private func playPause() { spotify.playPause() }
+    @objc private func previousTrack() { spotify.previousTrack() }
+    @objc private func nextTrack() { spotify.nextTrack() }
+    @objc private func toggleRepeat() { spotify.toggleRepeat() }
 
     private func showServiceError(_ error: Error) {
         let alert = NSAlert()
